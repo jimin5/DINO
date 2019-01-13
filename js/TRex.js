@@ -26,7 +26,6 @@ class GameObject {
     }
 }
 
-/*여기는 공룡의 움직임을 만들어 주기 위한 코드*/
 //게임 개체를 담는 틀
 class Sprite extends GameObject {
     constructor(game, sourceImageRect) {
@@ -92,7 +91,6 @@ class Animation extends Sprite {
         this.imageRect = this.frames[frameToRender];
     }
 }
-/*여기 까지*/
 
 
 //천지창조
@@ -408,7 +406,8 @@ class TRexGame {
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
-            this.player.x = 40;
+            this.player.x = 40+i*10;
+            this.players.push(this.player);
         }
         this.horizon = new Horizon(this);
         this.obstacles = [];
@@ -455,13 +454,15 @@ class TRexGame {
 
     render() {
         this.horizon.render();
-        this.player.render();
+        for(let i of this.players)i.render();
+        //this.player.render();
     }
 
     //업데이트 함수
     update(deltaTime) {
         this.horizon.update(deltaTime);
-        this.player.update(deltaTime);
+        for(let i of this.players)i.update(deltaTime);
+        //this.player.update(deltaTime);
     }
 
     //다음 업데이트 스케쥴링
