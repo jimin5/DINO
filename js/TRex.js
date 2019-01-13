@@ -148,7 +148,10 @@ class Horizon {
 
         // 장애물
         for (let o of this.obstacles) {
-            let isHit = this.collisionCheck(this.game.player, o);
+            for(let player of this.game.players){
+                if(this.collisionCheck(player, o))
+                    player.isDead = true;
+            }
             o.render();
         }
     }
@@ -331,6 +334,7 @@ class Player extends GameObject {
         this.velocity = 0; //속도
         this.jumping = false;
         this.ducking = false;
+        this.isDead = false;
 
         this.collisionRect.width = 44;
         this.collisionRect.height = 47;
@@ -437,6 +441,19 @@ class TRexGame {
         this.scheduleNextUpdate();
     }
 
+    //다 죽었을 때 처음부터 다시 게임을 시작하기 위해 초기화 해주어야 하는 변수들 초기화 하기
+    reset(){
+        this.players = [];
+        for (let i = 0; i < this.nplayer; i++) {
+            this.player = new Player(this);
+            this.player.x = 40+i*10;
+            this.players.push(this.player);
+        }
+        this.horizon = new Horizon(this);
+        this.obstacles = [];
+        this.play();
+    }
+
     run() {
         this.updatePending = false;
 
@@ -454,15 +471,22 @@ class TRexGame {
 
     render() {
         this.horizon.render();
-        for(let i of this.players)i.render();
-        //this.player.render();
+        let count = 0;
+        for(let i of this.players){
+            if(i.isDead)continue;
+            i.render();
+            ++count;
+        }
+        if(!count)this.reset();
     }
 
     //업데이트 함수
     update(deltaTime) {
         this.horizon.update(deltaTime);
-        for(let i of this.players)i.update(deltaTime);
-        //this.player.update(deltaTime);
+        for(let i of this.players){
+            if(i.isDead)continue;
+            i.update(deltaTime);
+        }
     }
 
     //다음 업데이트 스케쥴링
