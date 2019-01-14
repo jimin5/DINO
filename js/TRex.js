@@ -3,6 +3,11 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+//get random float
+function getRandomFloat(min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
 //get ramdom element
 function getRandomElement(array) {
     return array[getRandomInt(0, array.length - 1)];
@@ -146,10 +151,11 @@ class Horizon {
         let cnt = 0;
         for (let o of this.obstacles) {
             for(let i = 0; i < this.game.players.length; i++){
+                if(this.game.players[i].isDead) continue;
+                
                 if(this.collisionCheck(this.game.players[i], o)){
                     this.game.players[i].isDead = true;
                     this.game.scores[i] = cnt;
-                    console.log(cnt);
                 }
             }
             o.render();
