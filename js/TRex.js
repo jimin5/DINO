@@ -357,7 +357,7 @@ class Player extends GameObject {
         this.animation.update(deltaTime);
         if ((this.game.isKeyDown('Space') || this.game.isKeyDown('ArrowUp')) && !this.ducking) {
             this.jump();
-        } else if (this.game.isKeyDown('ArrowDown') && !this.jumping) {
+        } else if (this.game.isKeyDown('ArrowDown') && !this.jumping || this.ducking) {
             this.startDuck();
         } else {
             this.endDuck();
@@ -382,6 +382,8 @@ class Player extends GameObject {
         if (!this.jumping) {
             this.jumping = true;
             this.velocity = TRexGame.config.JUMP_VELOCITY;
+            this.animation = this.normal;
+            this.collisionRect.y = 125;
         }
     }
 
@@ -417,7 +419,7 @@ class TRexGame {
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
-            this.player.x = 40 + i * 10;
+            this.player.x = 40;
             this.players.push(this.player);
         }
         this.scores = [];
@@ -462,7 +464,7 @@ class TRexGame {
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
-            this.player.x = 40 + i * 10;
+            this.player.x = 40;
             this.players.push(this.player);
         }
         this.horizon = new Horizon(this);
