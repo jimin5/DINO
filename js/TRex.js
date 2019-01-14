@@ -101,7 +101,6 @@ class Horizon {
         this.obstacles = [];
         this.lastSpawnedObstacle = null;
         this.cloudSpawnTimer = 0;
-        this.i = 0;
 
         const { x, y, width, height } =
         TRexGame.spriteDefinition.HORIZON;
@@ -118,14 +117,11 @@ class Horizon {
         let p = player.collisionRect;
         let o = obstacle.collisionRect;
 
-        let tmp = document.getElementById("gen_n");
-
 
         if (p.x + p.width < o.x || p.x > o.x + o.width ||
             p.y + p.height < o.y || p.y > o.y + o.height) {
             return false;
         } else {
-            tmp.innerHTML = this.i++;
             return true;
         }
     }
@@ -147,12 +143,17 @@ class Horizon {
         }
 
         // 장애물
+        let cnt = 0;
         for (let o of this.obstacles) {
-            for(let player of this.game.players){
-                if(this.collisionCheck(player, o))
-                    player.isDead = true;
+            for(let i = 0; i < this.game.players.length; i++){
+                if(this.collisionCheck(this.game.players[i], o)){
+                    this.game.players[i].isDead = true;
+                    this.game.scores[i] = cnt;
+                    console.log(cnt);
+                }
             }
             o.render();
+            cnt++;
         }
     }
 
@@ -413,12 +414,18 @@ class TRexGame {
             this.player.x = 40+i*10;
             this.players.push(this.player);
         }
+        this.scores = [];
+
         this.horizon = new Horizon(this);
         this.obstacles = [];
         this.downKeys = {};
 
         this.paused = false;
         this.updatePending = false;
+
+        this.generation = 0;
+        this.genHTML = document.getElementById("gen_n");
+        this.genHTML.innerHTML = "generation : 0";
 
         window.addEventListener('blur', this.onVisibilityChange.bind(this));
         window.addEventListener('focus', this.onVisibilityChange.bind(this));
@@ -443,6 +450,8 @@ class TRexGame {
 
     //다 죽었을 때 처음부터 다시 게임을 시작하기 위해 초기화 해주어야 하는 변수들 초기화 하기
     reset(){
+        this.generation++;
+        this.genHTML.innerHTML = "<p>generation : " + this.generation + "</p>";
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
@@ -452,7 +461,9 @@ class TRexGame {
         this.horizon = new Horizon(this);
         this.obstacles = [];
         this.play();
+
     }
+
 
     run() {
         this.updatePending = false;
