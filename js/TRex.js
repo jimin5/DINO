@@ -355,13 +355,13 @@ class Player extends GameObject {
 
     update(deltaTime) {
         this.animation.update(deltaTime);
-        if ((this.game.isKeyDown('Space') || this.game.isKeyDown('ArrowUp')) && !this.ducking) {
+        /*if ((this.game.isKeyDown('Space') || this.game.isKeyDown('ArrowUp')) && !this.ducking) {
             this.jump();
-        } else if (this.game.isKeyDown('ArrowDown') && !this.jumping || this.ducking) {
+        } else if (this.game.isKeyDown('ArrowDown') && !this.jumping) {
             this.startDuck();
         } else {
             this.endDuck();
-        }
+        }*/
 
 
         this.velocity += TRexGame.config.GRAVITY;
@@ -380,13 +380,12 @@ class Player extends GameObject {
     //점프하기
     jump() {
         if (!this.jumping) {
+            this.ducking = false;
             this.jumping = true;
-            this.velocity = TRexGame.config.JUMP_VELOCITY;
             this.animation = this.normal;
-            this.collisionRect.y = 125;
+            this.velocity = TRexGame.config.JUMP_VELOCITY;
         }
     }
-
 
     //엎드리고 펴기
     startDuck() {
