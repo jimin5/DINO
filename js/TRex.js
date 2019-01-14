@@ -148,18 +148,20 @@ class Horizon {
         }
 
         // 장애물
-        let cnt = 0;
+        let o_cnt = 0;
         for (let o of this.obstacles) {
             for (let i = 0; i < this.game.players.length; i++) {
                 if (this.game.players[i].isDead) continue;
 
                 if (this.collisionCheck(this.game.players[i], o)) {
                     this.game.players[i].isDead = true;
-                    this.game.scores[i] = cnt;
+                    this.game.scores[i] = o_cnt;
                 }
             }
             o.render();
-            cnt++;
+            if (o.x < 40) o_cnt++;
+            this.game.scoreHTML.innerHTML = "score : " + o_cnt;
+            this.game.gamescore = o_cnt;
         }
     }
 
@@ -229,7 +231,7 @@ class Horizon {
     //추가된 함수
     getObstacle() {
         for (let o of this.obstacles) {
-            if (o.x >= 40) {
+            if (o.x >= 0) {
                 return o;
             }
         }
@@ -422,7 +424,7 @@ class TRexGame {
             this.players.push(this.player);
         }
         this.scores = [];
-        this.gameover = false;
+        this.isGameover = false;
 
         this.horizon = new Horizon(this);
         this.obstacles = [];
@@ -434,6 +436,11 @@ class TRexGame {
         this.generation = 0;
         this.genHTML = document.getElementById("gen_n");
         this.genHTML.innerHTML = "generation : 0";
+        this.scoreHTML = document.getElementById("score_n");
+        this.scoreHTML.innerHTML = "score : 0";
+        this.playerHTML = document.getElementById("player_n");
+        this.playerHTML.innerHTML = "player : 0";
+        this.boardHTML = document.getElementById("score_board");
 
         window.addEventListener('blur', this.onVisibilityChange.bind(this));
         window.addEventListener('focus', this.onVisibilityChange.bind(this));
@@ -468,10 +475,39 @@ class TRexGame {
         }
         this.horizon = new Horizon(this);
         this.obstacles = [];
-        this.gameover = false;
+        this.isGameover = false;
         this.play();
     }
 
+    gameover() {
+        this.pause();
+        this.isGameover = true;
+        //console.log("gameover");
+        this.insertScore();
+    }
+
+    insertScore() {
+        let len = this.boardHTML.rows.length;
+
+        for (let i = 0; i < len; i++) {
+            if (this.boardHTML.rows[i].cells[1].innerHTML <= this.gamescore) {
+                let row = this.boardHTML.insertRow(i);
+                row.insertCell(0).innerHTML = this.generation;
+                row.insertCell(1).innerHTML = this.gamescore;
+
+                if(len>=5){
+                    this.boardHTML.deleteRow(this.boardHTML.rows.length - 1);
+                }
+                return;
+            }
+        }
+
+        if (len < 5) {
+            let row = this.boardHTML.insertRow(this.boardHTML.rows.length);
+            row.insertCell(0).innerHTML = this.generation;
+            row.insertCell(1).innerHTML = this.gamescore;
+        }
+    }
 
     run() {
         this.updatePending = false;
@@ -496,9 +532,9 @@ class TRexGame {
             i.render();
             ++count;
         }
+        this.playerHTML.innerHTML = "player : " + count;
         if (!count) {
-            this.pause();
-            this.gameover = true;
+            this.gameover();
         }
     }
 
@@ -564,7 +600,8 @@ class TRexGame {
     }
 
     getDistance(obs) {
-        let ret = obs.x - this.player.x
+        //let ret = obs.x - this.player.x;
+        let ret = obs.x;
         if (ret < 0) {
             return this.canvas.width;
         } else {

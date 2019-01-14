@@ -1,6 +1,6 @@
 class NeuralNet {
     constructor() {
-        this.nplayer = 20;
+        this.nplayer = 1000;
         this.input_n = 4;
         this.output_n = 3;
 
@@ -21,9 +21,13 @@ class NeuralNet {
         }
         //console.log(this.weight);
 
-        this.bias = [
-            [1, 1, 1]
-        ];
+        this.bias = [];
+        for (let p = 0; p < this.nplayer; p++) {
+            this.bias.push([]);
+            for (let j = 0; j < this.output_n; j++) {
+                this.bias[p].push(getRandomFloat(-10, 10));
+            }
+        }
     }
 
     //input[4] * w[nplayer][4][3] + b[nplayer][3] = action[nplayer][3]
@@ -42,7 +46,7 @@ class NeuralNet {
                 for (let j = 0; j < this.input_n; j++) {
                     act[i] += input[j] * w[p][j][i];
                 }
-                act[i] += b[0][i];
+                act[i] += b[p][i];
                 sum += act[i];
             }
 
@@ -56,18 +60,27 @@ class NeuralNet {
         return ret;
     }
 
-    //mom[4][3], dad[4][3]
-    makeChild(mom, dad) {
+    //mom[4][3], dad[4][3], momb[3], dadb[3]
+    makeChild(mom, dad, momb, dadb) {
         let where;
         for (let p = 0; p < this.nplayer; p++) {
             for (let i = 0; i < this.output_n; i++) {
                 for (let j = 0; j < this.input_n; j++) {
+                	getRandomFloat(mom[j][i], dad[j][i]);
                     this.weight[p][j][i] = getRandomFloat(mom[j][i], dad[j][i]) - 1;
-                    console.log(getRandomInt(0, 1));
-                    if (getRandomFloat(0, 1) < 0.2) {
-                    	console.log("random", p, j, i);
+                    //console.log(getRandomFloat(0, 0));
+                    if (getRandomFloat(0, 0) < 0.2) {
                         this.weight[p][j][i] = getRandomFloat(-20, 20);
                     }
+                }
+            }
+        }
+
+        for (let p = 0; p < this.nplayer; p++) {
+            for (let i = 0; i < this.output_n; i++) {
+                this.bias[p][i] = getRandomFloat(momb[i], dadb[i]) - 1;
+                if (getRandomFloat(0, 0) < 0.2) {
+                    this.bias[p][i] = getRandomFloat(-10, 10);
                 }
             }
         }
@@ -81,11 +94,14 @@ let NN = new NeuralNet();
 setInterval(function() {
     let info = NN.game.Info();
     let info_array = [info.distance, info.width, info.height, info.position];
+    //console.log(info);
 
-    let f = [];
-    let selected = [];
-    if (NN.game.gameover) {
+    if (NN.game.isGameover) {
         //console.log("gameover");
+
+        let f = [];
+        let selected = [];
+
         let SumOfFitness = 0;
         let maxScore = 0,
             maxIdx = 0,
@@ -123,7 +139,8 @@ setInterval(function() {
         }
 
         //console.log(selected);
-        NN.makeChild(NN.weight[selected[0]], NN.weight[selected[1]]);
+        NN.makeChild(NN.weight[selected[0]], NN.weight[selected[1]],
+            NN.bias[selected[0]], NN.bias[selected[1]]);
         NN.game.reset();
     }
 
@@ -145,7 +162,7 @@ setInterval(function() {
             }
         }
 
-        console.log(action[p], nextAct);
+        //console.log(action[p], nextAct);
         switch (nextAct) {
             case 0:
                 NN.game.players[p].jump();
@@ -161,4 +178,4 @@ setInterval(function() {
                 console.log("error chosing action");
         }
     }
-}, 100)
+}, 10)
