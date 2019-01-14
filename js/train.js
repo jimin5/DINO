@@ -75,7 +75,45 @@ let NN = new NeuralNet();
 setInterval(function() {
     let info = NN.game.Info();
     let info_array = [info.distance, info.width, info.height, info.position];
-    NN.makeChild(NN.weight[0], NN.weight[0]);
+    
+   let f = [];
+   let selected = [];
+   if(NN.game.gameover){
+      console.log("gameover");
+      let SumOfFitness = 0;
+      let maxScore = 0, maxIdx = 0, minScore = 9999, minIdx = 0;
+      for(let i = 0; i < NN.game.scores.length; ++i){
+         let score = NN.game.scores[i];
+         if(maxScore < score){
+            maxScore = score;
+            maxIdx = i;
+         }
+         if(minScore > score){
+            minScore = score;
+            minIdx = i;
+         }
+         SumOfFitness += score;
+      }
+      
+      for(let i = 0; i < NN.game.scores.length; ++i)
+         f[i] = (maxScore - NN.game.scores[i]) + (maxScore - minScore)/3;
+      
+      let point = getRandomInt(0, SumOfFitness);
+      let sum = 0;
+      for(let i = 0; i < NN.game.scores.length; ++i){
+         sum += f[i];
+         if(point < sum){
+            selected.push(i);
+            selected.push(i+1);
+            break;
+         }
+      }
+
+      NN.makeChild(NN.weight[selected[0]], NN.weight[selected[1]]);
+      NN.game.reset();
+  	}
+    
+
     let action = NN.nextAction(info_array, NN.weight, NN.bias);
     //console.log(action);
 
@@ -105,39 +143,4 @@ setInterval(function() {
                 console.log("error chosing action");
         }
     }
-
-
-   let f = [];
-   let selected = [];
-   if(NN.game.gameover){
-      console.log("gameover");
-      let SumOfFitness = 0;
-      let maxScore = 0, maxIdx = 0, minScore = 9999, minIdx = 0;
-      for(let i = 0; i < NN.game.scores.length; ++i){
-         let score = NN.game.scores[i];
-         if(maxScore < score){
-            maxScore = score;
-            maxIdx = i;
-         }
-         if(minScore > score){
-            minScore = scores;
-            minIdx = i;
-         }
-         SumOfFitness += score;
-      }
-      
-      for(let i = 0; i < NN.game.scores.length; ++i)
-         f[i] = (maxscore - NN.game.scores[i]) + (maxScore - minScore)/3;
-      
-      let point = getRandomInt(0, SumOfFitness);
-      let sum = 0;
-      for(let i = 0; i < NN.game.scores.length; ++i){
-         sum += f[i];
-         if(point < sum){
-            selected.push(NN.game.players[i]);
-            selected.push(NN.game.players[i+1]);
-            break;
-         }
-      }
-  	}
 }, 100)

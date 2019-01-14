@@ -150,10 +150,10 @@ class Horizon {
         // 장애물
         let cnt = 0;
         for (let o of this.obstacles) {
-            for(let i = 0; i < this.game.players.length; i++){
-                if(this.game.players[i].isDead) continue;
-                
-                if(this.collisionCheck(this.game.players[i], o)){
+            for (let i = 0; i < this.game.players.length; i++) {
+                if (this.game.players[i].isDead) continue;
+
+                if (this.collisionCheck(this.game.players[i], o)) {
                     this.game.players[i].isDead = true;
                     this.game.scores[i] = cnt;
                 }
@@ -417,10 +417,11 @@ class TRexGame {
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
-            this.player.x = 40+i*10;
+            this.player.x = 40 + i * 10;
             this.players.push(this.player);
         }
         this.scores = [];
+        this.gameover = false;
 
         this.horizon = new Horizon(this);
         this.obstacles = [];
@@ -455,19 +456,19 @@ class TRexGame {
     }
 
     //다 죽었을 때 처음부터 다시 게임을 시작하기 위해 초기화 해주어야 하는 변수들 초기화 하기
-    reset(){
+    reset() {
         this.generation++;
         this.genHTML.innerHTML = "<p>generation : " + this.generation + "</p>";
         this.players = [];
         for (let i = 0; i < this.nplayer; i++) {
             this.player = new Player(this);
-            this.player.x = 40+i*10;
+            this.player.x = 40 + i * 10;
             this.players.push(this.player);
         }
         this.horizon = new Horizon(this);
         this.obstacles = [];
+        this.gameover = false;
         this.play();
-
     }
 
 
@@ -489,19 +490,22 @@ class TRexGame {
     render() {
         this.horizon.render();
         let count = 0;
-        for(let i of this.players){
-            if(i.isDead)continue;
+        for (let i of this.players) {
+            if (i.isDead) continue;
             i.render();
             ++count;
         }
-        if(!count)this.reset();
+        if (!count) {
+            this.pause();
+            this.gameover = true;
+        }
     }
 
     //업데이트 함수
     update(deltaTime) {
         this.horizon.update(deltaTime);
-        for(let i of this.players){
-            if(i.isDead)continue;
+        for (let i of this.players) {
+            if (i.isDead) continue;
             i.update(deltaTime);
         }
     }
