@@ -107,4 +107,37 @@ setInterval(function() {
     }
 
 
+   let f = [];
+   let selected = [];
+   if(NN.game.gameover){
+      console.log("gameover");
+      let SumOfFitness = 0;
+      let maxScore = 0, maxIdx = 0, minScore = 9999, minIdx = 0;
+      for(let i = 0; i < NN.game.scores.length; ++i){
+         let score = NN.game.scores[i];
+         if(maxScore < score){
+            maxScore = score;
+            maxIdx = i;
+         }
+         if(minScore > score){
+            minScore = scores;
+            minIdx = i;
+         }
+         SumOfFitness += score;
+      }
+      
+      for(let i = 0; i < NN.game.scores.length; ++i)
+         f[i] = (maxscore - NN.game.scores[i]) + (maxScore - minScore)/3;
+      
+      let point = getRandomInt(0, SumOfFitness);
+      let sum = 0;
+      for(let i = 0; i < NN.game.scores.length; ++i){
+         sum += f[i];
+         if(point < sum){
+            selected.push(NN.game.players[i]);
+            selected.push(NN.game.players[i+1]);
+            break;
+         }
+      }
+  	}
 }, 100)
