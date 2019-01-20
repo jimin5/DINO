@@ -1,6 +1,6 @@
 class NeuralNet {
     constructor() {
-        this.nplayer = 1000;
+        this.nplayer = 300;
         this.input_n = 4;
         this.output_n = 3;
 
@@ -79,7 +79,7 @@ class NeuralNet {
         for (let p = 0; p < this.nplayer; p++) {
             for (let i = 0; i < this.output_n; i++) {
                 this.bias[p][i] = getRandomFloat(momb[i], dadb[i]) - 1;
-                if (getRandomFloat(0, 0) < 0.2) {
+                if (getRandomFloat(0, 0) < 0.1) {
                     this.bias[p][i] = getRandomFloat(-10, 10);
                 }
             }
@@ -121,7 +121,7 @@ setInterval(function() {
         }
 
         for (let i = 0; i < NN.game.scores.length; ++i) {
-            f[i] = (maxScore - NN.game.scores[i]) + (maxScore - minScore) / 3;
+            f[i] = NN.game.scores[i] + (maxScore-minScore)/3;
             SumOfFitness += f[i];
         }
 
@@ -133,7 +133,18 @@ setInterval(function() {
             //console.log(sum)
             if (point <= sum) {
                 selected.push(i);
-                selected.push(i + 1);
+                break;
+            }
+        }
+
+        point = getRandomInt(0, SumOfFitness - 1);
+        //console.log("point", point, SumOfFitness);
+        sum = 0;
+        for (let i = 0; i < NN.game.scores.length; ++i) {
+            sum += f[i];
+            //console.log(sum)
+            if (point <= sum) {
+                selected.push(i);
                 break;
             }
         }
@@ -178,4 +189,4 @@ setInterval(function() {
                 console.log("error chosing action");
         }
     }
-}, 10)
+}, 0.01)

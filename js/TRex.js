@@ -132,7 +132,7 @@ class Horizon {
     }
 
     render() {
-        // 수평선        
+        // 수평선
         let { x, y, width, height } = TRexGame.spriteDefinition.HORIZON;
 
         for (let i = 0; i < this.xPositions.length; ++i) {
@@ -315,7 +315,7 @@ class Obstacle extends GameObject {
     }
 }
 
-//구름 
+//구름
 class Cloud extends Sprite {
     constructor(game) {
         super(game, TRexGame.spriteDefinition.CLOUD);
@@ -403,7 +403,7 @@ class Player extends GameObject {
     }
 }
 
-//real game code 
+//real game code
 class TRexGame {
     constructor(canvasElement, n) {
         this.canvas = canvasElement;
@@ -442,7 +442,7 @@ class TRexGame {
         this.playerHTML.innerHTML = "player : 0";
         this.boardHTML = document.getElementById("score_board");
 
-        window.addEventListener('blur', this.onVisibilityChange.bind(this));
+        //window.addEventListener('blur', this.onVisibilityChange.bind(this));
         window.addEventListener('focus', this.onVisibilityChange.bind(this));
         document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
         window.addEventListener('keydown', this.onKeyDown.bind(this));
