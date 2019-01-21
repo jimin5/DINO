@@ -1,6 +1,6 @@
 class NeuralNet {
     constructor() {
-        this.nplayer = 300;
+        this.nplayer = 100;
         this.input_n = 4;
         this.output_n = 3;
 
@@ -15,7 +15,7 @@ class NeuralNet {
                 for (let j = 0; j < this.output_n; j++) {
                     //console.log(getRandomFloat(0, 13),p,i,j);
                     //console.log(this.weight);
-                    this.weight[p][i].push(getRandomFloat(-20, 20));
+                    this.weight[p][i].push(getRandomFloat(-1, 1));
                 }
             }
         }
@@ -25,7 +25,7 @@ class NeuralNet {
         for (let p = 0; p < this.nplayer; p++) {
             this.bias.push([]);
             for (let j = 0; j < this.output_n; j++) {
-                this.bias[p].push(getRandomFloat(-10, 10));
+                this.bias[p].push(getRandomFloat(-1, 1));
             }
         }
     }
@@ -67,9 +67,15 @@ class NeuralNet {
             for (let i = 0; i < this.output_n; i++) {
                 for (let j = 0; j < this.input_n; j++) {
                 	getRandomFloat(mom[j][i], dad[j][i]);
-                    this.weight[p][j][i] = getRandomFloat(mom[j][i], dad[j][i]) - 1;
+                    //this.weight[p][j][i] = getRandomFloat(mom[j][i], dad[j][i] - 1);
+                    if(getRandomFloat(0,0)<=0.5){
+                    	this.weight[p][j][i] = mom[j][i];
+                    }else{
+                    	this.weight[p][j][i] = dad[j][i];
+                    }
+
                     //console.log(getRandomFloat(0, 0));
-                    if (getRandomFloat(0, 0) < 0.2) {
+                    if (getRandomFloat(0, 0) < 0.3) {
                         this.weight[p][j][i] = getRandomFloat(-20, 20);
                     }
                 }
@@ -78,8 +84,8 @@ class NeuralNet {
 
         for (let p = 0; p < this.nplayer; p++) {
             for (let i = 0; i < this.output_n; i++) {
-                this.bias[p][i] = getRandomFloat(momb[i], dadb[i]) - 1;
-                if (getRandomFloat(0, 0) < 0.1) {
+                this.bias[p][i] = getRandomFloat(momb[i], dadb[i] - 1);
+                if (getRandomFloat(0, 0) < 0.2) {
                     this.bias[p][i] = getRandomFloat(-10, 10);
                 }
             }
@@ -92,8 +98,10 @@ let NN = new NeuralNet();
 
 //주기적으로 행동
 setInterval(function() {
+	//console.log(getRandomFloat(-3, 3));
+
     let info = NN.game.Info();
-    let info_array = [info.distance, info.width, info.height, info.position];
+    let info_array = [info.distance, 0, info.height, info.position];
     //console.log(info);
 
     if (NN.game.isGameover) {

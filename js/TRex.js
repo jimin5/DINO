@@ -5,6 +5,11 @@ function getRandomInt(min, max) {
 
 //get random float
 function getRandomFloat(min, max) {
+    if(min > max){
+        let tmp = min;
+        min = max;
+        max = tmp;
+    }
     return Math.random() * (max - min + 1) + min;
 }
 
