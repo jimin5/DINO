@@ -63,7 +63,12 @@ class NeuralNet {
     //mom[4][3], dad[4][3], momb[3], dadb[3]
     makeChild(mom, dad, momb, dadb) {
         let where;
-        for (let p = 0; p < this.nplayer; p++) {
+        this.weight[0] = mom;
+        this.weight[1] = dad;
+        this.bias[0] = momb;
+        this.bias[1] = dadb;
+
+        for (let p = 2; p < this.nplayer; p++) {
             for (let i = 0; i < this.output_n; i++) {
                 for (let j = 0; j < this.input_n; j++) {
                 	getRandomFloat(mom[j][i], dad[j][i]);
@@ -76,7 +81,7 @@ class NeuralNet {
 
                     //console.log(getRandomFloat(0, 0));
                     if (getRandomFloat(0, 0) < 0.3) {
-                        this.weight[p][j][i] = getRandomFloat(-20, 20);
+                        this.weight[p][j][i] = getRandomFloat(-1, 0);
                     }
                 }
             }
@@ -86,7 +91,7 @@ class NeuralNet {
             for (let i = 0; i < this.output_n; i++) {
                 this.bias[p][i] = getRandomFloat(momb[i], dadb[i] - 1);
                 if (getRandomFloat(0, 0) < 0.2) {
-                    this.bias[p][i] = getRandomFloat(-10, 10);
+                    this.bias[p][i] = getRandomFloat(-1, 0);
                 }
             }
         }
@@ -156,6 +161,8 @@ setInterval(function() {
                 break;
             }
         }
+
+
 
         //console.log(selected);
         NN.makeChild(NN.weight[selected[0]], NN.weight[selected[1]],
